@@ -34,6 +34,7 @@ public class MS1Main {
             ui.displayGameState(executioner, displayCount);
             boolean gotTheWord = false;
             while (!executioner.isGameOver()&&!gotTheWord) {
+                gotTheWord = false;
                 //ask user for a guess
                 char guess = ui.askNextGuess(executioner);
                 //display results of guess
