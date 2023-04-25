@@ -75,10 +75,10 @@ public class ConsoleExecutioner implements Executioner {
         letter = Character.toUpperCase(letter);
 
         // Check if the letter has already been guessed
-        if (guessedLetters.contains(letter)) {
-            userInt.displayGameState();
-            return -1;
-        }
+//        if (guessedLetters.contains(letter)) {
+//            userInt.displayGameState();
+//            return -1;
+//        }
 
         // Add the guessed letter to the collection of guessed letters
         guessedLetters.add(letter);
