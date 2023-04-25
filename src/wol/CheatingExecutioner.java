@@ -101,10 +101,27 @@ public class CheatingExecutioner implements Executioner{
         return largestFamily;
     }
 
+    //method to find the total number of occurrences and decrements the
+    // number of remaining guesses if there are no occurrences
+    private int checkForOccurrences (char letter){
+        //checks the family to see how many times the letter is present
+        int occurences = 0;
+        for(String value:possibleWords){
+            for(char c:value.toCharArray()){
+                if (c == letter){
+                    occurences++;
+                }
+            }
+        }
+        //decrements the number of remaining guesses if the letter is not present in the word family
+        if(occurences==0){
+            remainingGuesses--;
+        }
+        return occurences;
+    }
 
     @Override
     public int registerAGuess(char letter) {
-        int occurences = 0;
         //add guess to the list of guessed letters
         guessedLetters.add(Character.toUpperCase(letter));
 
@@ -117,30 +134,20 @@ public class CheatingExecutioner implements Executioner{
         // Remove words not in the largest family
         possibleWords.retainAll(wordsToKeep);
 
-        //checks the secret word to see how many times the letter is present
-        boolean letterPresent = false;
-        for(String value:possibleWords){
-            for(char c:value.toCharArray()){
-                if (c == letter){
-                    letterPresent = true;
-                    occurences++;
-                }
-            }
-        }
-        //decrements the number of remaining guesses if the letter is not present in the secret word
-        if(occurences==0){
-            remainingGuesses--;
-        }
-
-        if(remainingGuesses==0){
-            gameOver = true;
-        }
-        return occurences;
+        //checks the family to see how many times the letter is present then returns the value
+        return checkForOccurrences (letter);
     }
 
     @Override
     public String revealSecretWord() {
         return secretWord.toUpperCase();
+    }
+
+    //private method to get called after every guess to ensure that the player has enough guesses to make another turn
+    private void setGameOver(){
+        if(remainingGuesses==0){
+            gameOver = true;
+        }
     }
 
     @Override
