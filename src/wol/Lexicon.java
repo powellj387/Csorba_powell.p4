@@ -1,18 +1,18 @@
 package wol;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import com.sun.source.tree.Tree;
+
+import java.util.*;
 
 public class Lexicon {
     private final Set<String> gameWords;
 
     public Lexicon(java.util.Collection<java.lang.String> words){
-        gameWords = new HashSet<>(words);
+        gameWords = new TreeSet<>(words);
     }
 
     public java.util.Collection<java.lang.String> wordsOfLength(int length){
-        Collection<String> userLengthWords = new HashSet<>();
+        TreeSet<String> userLengthWords = new TreeSet<>();
         for(String word:gameWords){
             if(word.length() == length){
                 userLengthWords.add(word);

@@ -1,23 +1,23 @@
 package wol;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
+
 public class ConsoleExecutioner implements Executioner {
     ConsoleInterface userInt;
-    private Collection<String> possibleWords;
+    private final Collection<String> possibleWords;
     private int remainingGuesses;
-    private char invalidChar;
-    private Collection<Character> guessedLetters;
+    private final Collection<Character> guessedLetters;
     private String secretWord;
     private boolean gameOver;
+    private char invalidCharacter;
 
     public ConsoleExecutioner(ConsoleInterface ui) {
 
         userInt = ui;
         // Default constructor for Cheating Executioner
-        possibleWords = new HashSet<>();
+        possibleWords = new TreeSet<>();
         guessedLetters = new ArrayList<>();
+        secretWord = null;
         gameOver = false;
     }
 
@@ -27,9 +27,9 @@ public class ConsoleExecutioner implements Executioner {
         possibleWords.clear();
         possibleWords.addAll(words);
         remainingGuesses = maxIncorrectGuesses;
-        this.invalidChar = invalidChar;
+        invalidCharacter = invalidChar;
         guessedLetters.clear();
-        secretWord = null;
+        secretWord = userInt.selectSecretWord(possibleWords);
         gameOver = false;
     }
 
@@ -46,18 +46,15 @@ public class ConsoleExecutioner implements Executioner {
 
     public String formattedSecretWord() {
         // Return a specially formatted version of the secret word. Correctly guessed letters are filled in with upper case characters. Hidden letters are represented by the given invalidChar.
-        if (secretWord == null) {
-            return null;
-        }
-        StringBuilder sb = new StringBuilder();
+        StringBuilder formattedWord = new StringBuilder();
         for (char c : secretWord.toCharArray()) {
             if (guessedLetters.contains(Character.toUpperCase(c))) {
-                sb.append(Character.toUpperCase(c));
+                formattedWord.append(Character.toUpperCase(c));
             } else {
-                sb.append(invalidChar);
+                formattedWord.append(invalidCharacter);
             }
         }
-        return sb.toString();
+        return formattedWord.toString();
     }
 
     public int countOfPossibleWords() {
@@ -71,69 +68,70 @@ public class ConsoleExecutioner implements Executioner {
     }
 
     public int registerAGuess(char letter) {
-        // Convert the guess to uppercase
-        letter = Character.toUpperCase(letter);
+       int occurences = 0;
+        //add guess to the list of guessed letters
+        guessedLetters.add(Character.toUpperCase(letter));
 
-        // Check if the letter has already been guessed
-//        if (guessedLetters.contains(letter)) {
-//            userInt.displayGameState();
-//            return -1;
-//        }
-
-        // Add the guessed letter to the collection of guessed letters
-        guessedLetters.add(letter);
-
-        // Divide the possible words into word families based on the guessed letter
-        ArrayList<ArrayList<String>> wordFamilies = new ArrayList<>();
-        for (int i = 0; i < 26; i++) {
-            wordFamilies.add(new ArrayList<String>());
-        }
+        //create a map of different patterns stemming from guess
+        Map<String, List<String>> wordFamilies = new HashMap<>();
         for (String word : possibleWords) {
-            int index = letter - 'A';
-            if (word.indexOf(letter) != -1) {
-                index = letter - 'A';
-            } else if (word.indexOf(Character.toLowerCase(letter)) != -1) {
-                index = Character.toLowerCase(letter) - 'a';
+            StringBuilder sb = new StringBuilder();
+            for (char c : word.toCharArray()) {
+                if (c == letter) {
+                    sb.append(letter);
+                } else {
+                    sb.append("_");
+                }
             }
-            wordFamilies.get(index).add(word);
+            String pattern = sb.toString();
+            if (!wordFamilies.containsKey(pattern)) {
+                wordFamilies.put(pattern, new ArrayList<>());
+            }
+            wordFamilies.get(pattern).add(word);
         }
 
-        // Select the largest word family
-        ArrayList<String> largestWordFamily = wordFamilies.get(0);
-        for (int i = 1; i < 26; i++) {
-            if (wordFamilies.get(i).size() > largestWordFamily.size()) {
-                largestWordFamily = wordFamilies.get(i);
+        //creates the pattern for the secret word
+        StringBuilder sb = new StringBuilder();
+        for (char c : secretWord.toCharArray()) {
+            if (c == letter) {
+                sb.append(letter);
+            } else {
+                sb.append("_");
+            }
+        }
+        String secretPattern = sb.toString();
+
+        // Select largest word family
+        List<String> closestFamily = Collections.emptyList();
+        Set<String> keys = wordFamilies.keySet();
+        for (String pattern : keys) {
+            if (pattern.equals(secretPattern)) {
+                closestFamily = wordFamilies.get(pattern);
             }
         }
 
-        // Remove any words from the possible word list that are not in the largest word family
-        possibleWords.retainAll(largestWordFamily);
+        // Remove words not in closest family
+        possibleWords.retainAll(closestFamily);
 
-        // Decrement the remaining guess count if the guessed letter does not appear in the word family
-        if (largestWordFamily.indexOf(letter) == -1 && largestWordFamily.indexOf(Character.toLowerCase(letter)) == -1) {
+        //checks the secret word to see how many times the letter is present
+        for(int i=0;i<secretWord.length();++i){
+            if (letter == secretWord.charAt(i)){
+                occurences++;
+            }
+        }
+        //decrements the number of remaining guesses if the letter is not present in the secret word
+        if(occurences==0){
             remainingGuesses--;
         }
 
-        // Check if the game is over
-        if (remainingGuesses == 0 || possibleWords.size() == 1) {
+        if(remainingGuesses==0){
             gameOver = true;
         }
-
-        // Return the number of occurrences of the given letter in the largest word family
-        int count = 0;
-        for (String word : largestWordFamily) {
-            for (int i = 0; i < word.length(); i++) {
-                if (word.charAt(i) == letter) {
-                    count++;
-                }
-            }
-        }
-        return count;
+        return occurences;
     }
 
     public String revealSecretWord() {
         // Select any still possible word as the secret word
-        secretWord = possibleWords.iterator().next();
         return secretWord.toUpperCase();
     }
 

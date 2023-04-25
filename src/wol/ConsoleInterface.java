@@ -63,12 +63,12 @@ public class ConsoleInterface {
         boolean validInput = false;
 
         while(!validInput){
-            output.print("Guess a letter: ");
+            output.print("Enter a guess: ");
             guess = scan.nextLine().toLowerCase().charAt(0);
             if(!Character.isLetter(guess)){
                 output.println("That is not a letter. Please enter a letter!");
             } else if (executioner.letterAlreadyGuessed(guess)) {
-                output.println("You've already guesses the letter" + guess + ". PLease enter a new letter!");
+                output.println("You've already guesses the letter " + guess + ". PLease enter a new letter!");
             } else{
                 validInput = true;
             }
@@ -80,7 +80,7 @@ public class ConsoleInterface {
         boolean wantsToPlay = false;
         Character decision = null;
 
-        output.println("Would you like to play another game(Y/N)? ");
+        output.print("Would you like to play another game(Y/N)? ");
         decision = scan.nextLine().charAt(0);
 
         if (decision.equals('Y')) {
@@ -91,15 +91,15 @@ public class ConsoleInterface {
     }
 
     public void displayGameState(Executioner executioner, boolean displayWordCount){
-        output.println("You have"+executioner.incorrectGuessesRemaining()+"guesses left.");
+        output.println("You have "+executioner.incorrectGuessesRemaining()+" guesses left.");
 
         ArrayList<Character> usedLetters = new ArrayList<>(executioner.guessedLetters());
-        output.print("Used letters:");
+        output.print("Used letters: ");
         for(Character letter: usedLetters){
             output.print(Character.toUpperCase(letter) + " ");
         }
 
-        output.println("Word: " + executioner.formattedSecretWord());
+        output.println("\nWord: " + executioner.formattedSecretWord());
 
         if(displayWordCount){
             output.println("Word count: " + executioner.countOfPossibleWords());
@@ -108,7 +108,7 @@ public class ConsoleInterface {
 
     public void displayResultsOfGuess(char guess, int occurrences){
         if(occurrences == 0){
-            output.println("Sorry there are no"+ guess+"'s");
+            output.println("Sorry there are no "+ guess+"'s");
         }else {
             output.println("There is/are " + occurrences + " " + guess + "'s");
         }
@@ -131,7 +131,7 @@ public class ConsoleInterface {
         }
 
         while(!validWord){
-            output.println("Please enter one of the passwords: ");
+            output.print("Please enter one of the passwords: ");
             userWord = scan.nextLine();
             if(secretWords.contains(userWord)){
                 validWord = true;
