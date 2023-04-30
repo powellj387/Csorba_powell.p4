@@ -39,11 +39,11 @@ public class WheelOfLies {
                     char guess = gameUI.askNextGuess(gameEx);
                     //display results of guess
                     gameUI.displayResultsOfGuess(guess, gameEx.registerAGuess(guess));
-                    if(gameEx.formattedSecretWord().toUpperCase().equals(gameEx.revealSecretWord()))
+                    if(gameEx.isGameOver())
                     {
                         gotTheWord = true;
                     }
-                    if (!gameEx.isGameOver()&&!gotTheWord) {
+                    else {
                         //display the game state
                         gameUI.displayGameState(gameEx, displayCount);
                     }

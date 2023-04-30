@@ -42,9 +42,9 @@ public class CheatingExecutioner implements Executioner{
 
     @Override
     public String formattedSecretWord() {
-        // Return a specially formatted version of the secret word. Correctly guessed letters are filled in with upper case characters. Hidden letters are represented by the given invalidChar.
+        //takes families which have already been kept and places the letters into the secret word accordingly
         StringBuilder formattedWord = new StringBuilder();
-        for (char c : secretWord.toCharArray()) {
+        for (char c : possibleWords.iterator().next().toCharArray()) {
             if (guessedLetters.contains(Character.toUpperCase(c))) {
                 formattedWord.append(Character.toUpperCase(c));
             } else {
@@ -92,11 +92,14 @@ public class CheatingExecutioner implements Executioner{
         //goes through the entire map looking for the pattern with the most words
         for( var entry : map.entrySet() ){
             // see if this family has the most words
-            if( entry.getValue().size() > mostWords ){
+            if(entry.getValue().size() > mostWords ){
                 mostWords = entry.getValue().size();
                 largestFamily.clear();
                 largestFamily.addAll(entry.getValue());
             }
+        }
+        if(largestFamily.size() == 1){
+            secretWord = largestFamily.get(0);
         }
         return largestFamily;
     }
@@ -106,13 +109,11 @@ public class CheatingExecutioner implements Executioner{
     private int checkForOccurrences (char letter){
         //checks the family to see how many times the letter is present
         int occurences = 0;
-        for(String value:possibleWords){
-            for(char c:value.toCharArray()){
+            for(char c:possibleWords.iterator().next().toCharArray()){
                 if (c == letter){
                     occurences++;
                 }
             }
-        }
         //decrements the number of remaining guesses if the letter is not present in the word family
         if(occurences==0){
             remainingGuesses--;
@@ -134,8 +135,14 @@ public class CheatingExecutioner implements Executioner{
         // Remove words not in the largest family
         possibleWords.retainAll(wordsToKeep);
 
+        //checks for occurrences
+        int occurrences = checkForOccurrences(letter);
+
+        //check to see if the game is over
+        setGameOver();
+
         //checks the family to see how many times the letter is present then returns the value
-        return checkForOccurrences (letter);
+        return occurrences;
     }
 
     @Override
@@ -146,12 +153,13 @@ public class CheatingExecutioner implements Executioner{
     //private method to get called after every guess to ensure that the player has enough guesses to make another turn
     private void setGameOver(){
         if(remainingGuesses==0){
+            secretWord = possibleWords.iterator().next();
             gameOver = true;
         }
     }
 
     @Override
     public boolean isGameOver() {
-        return gameOver;
+            return gameOver;
     }
 }
