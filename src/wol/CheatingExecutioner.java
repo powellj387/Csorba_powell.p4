@@ -18,7 +18,7 @@ public class CheatingExecutioner implements Executioner{
         gameOver = false;
     }
 
-    @Override
+
     public void newGame(Collection<String> words, int maxIncorrectGuesses, char invalidChar) {
         // Prepares the executioner for a new game with the given collection of potential secret words.
         possibleWords.clear();
@@ -30,17 +30,17 @@ public class CheatingExecutioner implements Executioner{
         gameOver = false;
     }
 
-    @Override
+
     public int incorrectGuessesRemaining() {
         return remainingGuesses;
     }
 
-    @Override
+
     public Collection<Character> guessedLetters() {
         return guessedLetters;
     }
 
-    @Override
+
     public String formattedSecretWord() {
         //takes families which have already been kept and places the letters into the secret word accordingly
         StringBuilder formattedWord = new StringBuilder();
@@ -54,12 +54,12 @@ public class CheatingExecutioner implements Executioner{
         return formattedWord.toString();
     }
 
-    @Override
+
     public int countOfPossibleWords() {
         return possibleWords.size();
     }
 
-    @Override
+
     public boolean letterAlreadyGuessed(char letter) {
         return guessedLetters.contains(Character.toUpperCase(letter));
     }
@@ -121,7 +121,7 @@ public class CheatingExecutioner implements Executioner{
         return occurences;
     }
 
-    @Override
+
     public int registerAGuess(char letter) {
         //add guess to the list of guessed letters
         guessedLetters.add(Character.toUpperCase(letter));
@@ -145,7 +145,7 @@ public class CheatingExecutioner implements Executioner{
         return occurrences;
     }
 
-    @Override
+
     public String revealSecretWord() {
         return secretWord.toUpperCase();
     }
@@ -158,7 +158,7 @@ public class CheatingExecutioner implements Executioner{
         }
     }
 
-    @Override
+
     public boolean isGameOver() {
             return gameOver;
     }

@@ -1,6 +1,14 @@
 package wol;
 
-public class DuplicateKeyException {
-    public DuplicateKeyException(){}
-    public DuplicateKeyException(java.lang.String message){}
+import java.io.Serializable;
+
+public class DuplicateKeyException extends RuntimeException implements Serializable {
+
+    public DuplicateKeyException() {
+        super();
+    }
+
+    public DuplicateKeyException(String message) {
+        super(message);
+    }
 }
