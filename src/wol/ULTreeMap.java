@@ -39,13 +39,16 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
     }
 
     private Node cloneNode(Node node) {
-        if (node == null) {
-            return null;
+        Node result = null;
+
+        if (node != null) {
+            Node newNode = new Node(node.key, node.value);
+            newNode.left = cloneNode(node.left);
+            newNode.right = cloneNode(node.right);
+            result = newNode;
         }
-        Node newNode = new Node(node.key, node.value);
-        newNode.left = cloneNode(node.left);
-        newNode.right = cloneNode(node.right);
-        return newNode;
+
+        return result;
     }
 
     public void insert(K key, V value) throws DuplicateKeyException{
@@ -58,29 +61,23 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
         root = insert(root, key, value);
     }
     private Node insert(Node node, K key, V value) throws DuplicateKeyException {
-        // If the current node is null, create a new node with the given key and value
+        Node result = node;
+
         if (node == null) {
             size++;
-            return new Node(key, value);
+            result = new Node(key, value);
+        } else {
+            int cmp = compare(key, node.key);
+            if (cmp < 0) {
+                node.left = insert(node.left, key, value);
+            } else if (cmp > 0) {
+                node.right = insert(node.right, key, value);
+            } else {
+                throw new DuplicateKeyException("Duplicate key found: " + key);
+            }
         }
 
-        // Compare the given key with the key of the current node
-        int cmp = compare(key, node.key);
-
-        // If the given key is less than the key of the current node, recursively insert the node to the left
-        if (cmp < 0) {
-            node.left = insert(node.left, key, value);
-        }
-        // If the given key is greater than the key of the current node, recursively insert the node to the right
-        else if (cmp > 0) {
-            node.right = insert(node.right, key, value);
-        }
-        // If the given key is equal to the key of the current node, throw DuplicateKeyException
-        else {
-            throw new DuplicateKeyException("Duplicate key found: " + key);
-        }
-
-        return node;
+        return result;
     }
 
     public void put(K key, V value){
@@ -93,15 +90,16 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
     private Node put(Node node, K key, V value) {
         if (node == null) {
             size++;
-            return new Node(key, value);
-        }
-        int cmp = compare(key, node.key);
-        if (cmp < 0) {
-            node.left = put(node.left, key, value);
-        } else if (cmp > 0) {
-            node.right = put(node.right, key, value);
+            node = new Node(key, value);
         } else {
-            node.value = value;
+            int cmp = compare(key, node.key);
+            if (cmp < 0) {
+                node.left = put(node.left, key, value);
+            } else if (cmp > 0) {
+                node.right = put(node.right, key, value);
+            } else {
+                node.value = value;
+            }
         }
         return node;
     }
@@ -112,11 +110,11 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
 
     public V lookup(K key){
         Node node = get(root, key);
+        V result = null;
         if (node != null) {
-            return node.value;
-        } else {
-            return null;
+            result = node.value;
         }
+        return result;
     }
 
 
@@ -128,6 +126,7 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
             return null;
         }
         int cmp = compare(key, node.key);
+        Node result = null;
         if (cmp < 0) {
             node
                     .left = erase(node.left, key);
@@ -136,10 +135,10 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
         } else {
             if (node.left == null) {
                 size--;
-                return node.right;
+                result = node.right;
             } else if (node.right == null) {
                 size--;
-                return node.left;
+                result = node.left;
             } else {
                 Node min = node.right;
                 while (min.left != null) {
@@ -150,7 +149,7 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
                 node.right = erase(node.right, min.key);
             }
         }
-        return node;
+        return result;
     }
 
     public java.util.Collection<K> keys(){
@@ -181,22 +180,26 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
     private int compare(K a, K b) {
         if (comparator != null) {
             return comparator.compare(a, b);
-        } else {
-            return ((Comparable<K>) a).compareTo(b);
         }
+        return ((Comparable<K>) a).compareTo(b);
     }
 
     private Node get(Node node, K key) {
         if (node == null) {
             return null;
         }
+
         int cmp = compare(key, node.key);
+
+        Node result = null;
         if (cmp == 0) {
-            return node;
+            result = node;
         } else if (cmp < 0) {
-            return get(node.left, key);
+            result = get(node.left, key);
         } else {
-            return get(node.right, key);
+            result = get(node.right, key);
         }
+
+        return result;
     }
 }
