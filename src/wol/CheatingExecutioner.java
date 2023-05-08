@@ -1,4 +1,7 @@
+//@authors Alex Csorba and Julian Powell
 package wol;
+
+import test.ULTreeMapTest;
 
 import java.util.*;
 
@@ -18,7 +21,6 @@ public class CheatingExecutioner implements Executioner{
         gameOver = false;
     }
 
-
     public void newGame(Collection<String> words, int maxIncorrectGuesses, char invalidChar) {
         // Prepares the executioner for a new game with the given collection of potential secret words.
         possibleWords.clear();
@@ -30,16 +32,13 @@ public class CheatingExecutioner implements Executioner{
         gameOver = false;
     }
 
-
     public int incorrectGuessesRemaining() {
         return remainingGuesses;
     }
 
-
     public Collection<Character> guessedLetters() {
         return guessedLetters;
     }
-
 
     public String formattedSecretWord() {
         //takes families which have already been kept and places the letters into the secret word accordingly
@@ -54,19 +53,17 @@ public class CheatingExecutioner implements Executioner{
         return formattedWord.toString();
     }
 
-
     public int countOfPossibleWords() {
         return possibleWords.size();
     }
-
 
     public boolean letterAlreadyGuessed(char letter) {
         return guessedLetters.contains(Character.toUpperCase(letter));
     }
 
-    private Map<String, List<String>> patternMap(char letter) {
+    private ULTreeMap<String, List<String>> patternMap(char letter) {
         //create a map of different patterns stemming from guess
-        Map<String, List<String>> wordFamilies = new HashMap<>();
+        ULTreeMap<String, List<String>> wordFamilies = new ULTreeMap<>();
         for (String word : possibleWords) {
             StringBuilder sb = new StringBuilder();
             for (char c : word.toCharArray()) {
@@ -80,22 +77,22 @@ public class CheatingExecutioner implements Executioner{
             if (!wordFamilies.containsKey(pattern)) {
                 wordFamilies.put(pattern, new ArrayList<>());
             }
-            wordFamilies.get(pattern).add(word);
+            wordFamilies.lookup(pattern).add(word);
         }
         return wordFamilies;
     }
 
-    private List<String> largestFamily(Map<String, List<String>> map){
+    private List<String> largestFamily(ULTreeMap<String, List<String>> map){
         // Select largest word family
         int mostWords = -1;
         List<String> largestFamily = new ArrayList<>(Collections.emptyList());
         //goes through the entire map looking for the pattern with the most words
-        for( var entry : map.entrySet() ){
+        for( var entry : map.keys() ){
             // see if this family has the most words
-            if(entry.getValue().size() > mostWords ){
-                mostWords = entry.getValue().size();
+            if(map.lookup(entry).size() > mostWords ){
+                mostWords = map.lookup(entry).size();
                 largestFamily.clear();
-                largestFamily.addAll(entry.getValue());
+                largestFamily.addAll(map.lookup(entry));
             }
         }
         if(largestFamily.size() == 1){
@@ -121,13 +118,12 @@ public class CheatingExecutioner implements Executioner{
         return occurences;
     }
 
-
     public int registerAGuess(char letter) {
         //add guess to the list of guessed letters
         guessedLetters.add(Character.toUpperCase(letter));
 
         //gets map of different patterns stemming from guess
-        Map<String, List<String>> familyMap = patternMap(letter);
+        ULTreeMap<String, List<String>> familyMap = patternMap(letter);
 
         //finds the pattern with the largest number of words
         List<String> wordsToKeep = largestFamily(familyMap);
@@ -145,11 +141,9 @@ public class CheatingExecutioner implements Executioner{
         return occurrences;
     }
 
-
     public String revealSecretWord() {
         return secretWord.toUpperCase();
     }
-
     //private method to get called after every guess to ensure that the player has enough guesses to make another turn
     private void setGameOver(){
         if(remainingGuesses==0){
@@ -157,7 +151,6 @@ public class CheatingExecutioner implements Executioner{
             gameOver = true;
         }
     }
-
 
     public boolean isGameOver() {
             return gameOver;

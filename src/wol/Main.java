@@ -1,3 +1,4 @@
+//@authors Alex Csorba and Julian Powell
 package wol;
 
 import java.io.File;

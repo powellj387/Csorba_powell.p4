@@ -1,3 +1,4 @@
+//@authors Alex Csorba and Julian Powell
 package wol;
 
 import java.util.*;
@@ -21,7 +22,6 @@ public class ConsoleExecutioner implements Executioner {
         gameOver = false;
     }
 
-
     public void newGame(Collection<String> words, int maxIncorrectGuesses, char invalidChar) {
         // Prepares the executioner for a new game with the given collection of potential secret words.
         possibleWords.clear();
@@ -32,7 +32,6 @@ public class ConsoleExecutioner implements Executioner {
         secretWord = userInt.selectSecretWord(possibleWords);
         gameOver = false;
     }
-
 
     public int incorrectGuessesRemaining() {
         // Returns the number of incorrect letter guesses the condemned can make before losing.

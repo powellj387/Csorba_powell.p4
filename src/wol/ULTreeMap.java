@@ -1,3 +1,4 @@
+//@authors Alex Csorba and Julian Powell
 package wol;
 
 import java.util.Comparator;
@@ -22,7 +23,6 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
     public ULTreeMap() {
         root = null;
     }
-
 
     public ULTreeMap(java.util.Comparator<K> compare) {
         root = null;
@@ -117,7 +117,6 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
         return result;
     }
 
-
     public void erase(K key){
         root = erase(root, key);
     }
@@ -183,6 +182,7 @@ public class ULTreeMap<K,V> implements java.lang.Cloneable{
         }
         return ((Comparable<K>) a).compareTo(b);
     }
+
 
     private Node get(Node node, K key) {
         if (node == null) {
